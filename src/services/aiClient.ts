@@ -46,24 +46,9 @@ function normalizeAiResponse(data: Partial<AiResponse>, hintEnabled: boolean): A
 }
 
 function mockAiResponse(request: AiRequest): Promise<AiResponse> {
-  const question = request.question.toLowerCase();
-  let answer: AiResponse["answer"] = answerKnownFact(request) ?? "无关";
-
-  if (question.includes("妻") || question.includes("伞") || question.includes("危险")) {
-    answer = "是也不是";
-  }
-
-  if (question.includes("矮") || question.includes("报警")) {
-    answer = "是";
-  }
-
-  if (question.includes("外星") || question.includes("魔法") || question.includes("梦")) {
-    answer = "不是";
-  }
-
   const result: AiResponse = {
-    answer,
-    label: labelByAnswer[answer],
+    answer: "无关",
+    label: labelByAnswer["无关"],
   };
 
   if (request.hintEnabled) {
@@ -73,17 +58,4 @@ function mockAiResponse(request: AiRequest): Promise<AiResponse> {
   return new Promise<AiResponse>((resolve) => {
     window.setTimeout(() => resolve(result), 450);
   });
-}
-
-function answerKnownFact(request: AiRequest): AiResponse["answer"] | undefined {
-  if (!asksAboutDeath(request.question)) return undefined;
-  return mentionsDeathFact(request.truth) ? "是" : "不是";
-}
-
-function asksAboutDeath(question: string): boolean {
-  return /死|死亡|自杀|被杀|遇害|丧命|去世|死者/.test(question);
-}
-
-function mentionsDeathFact(truth: string): boolean {
-  return /死|死亡|自杀|被杀|遇害|丧命|去世|死者/.test(truth);
 }
